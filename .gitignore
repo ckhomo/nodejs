@@ -1,1 +1,4 @@
+# Default ignored files
 /package-lock.json
+/data
+
