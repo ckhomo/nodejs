@@ -1,4 +1,6 @@
 # Default ignored files
 /package-lock.json
 /data
+/node_modules
+
 
