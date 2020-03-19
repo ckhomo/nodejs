@@ -1,0 +1,22 @@
+<%- include('parts/html_head') %>
+<%- include('parts/navbar') %>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Age</th>
+        </tr>
+    </thead>
+    <tbody>
+        <%#for (let i in sales) {%>
+        <% for (let i = 0; i<sales.length;i++){%>
+        <tr>
+            <td><%=sales[i].id%></td>
+            <td><%=sales[i].name%></td>
+            <td><%=sales[i].age%></td>
+        </tr>
+        <%}%>
+    </tbody>
+</table>
+<%- include('parts/html_foot') %>
