@@ -1,13 +1,19 @@
 const express = require('express');
 const url = require('url');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
+const fs = require('fs');
+const uuid = require('uuid');
 
-const url_encoded_Parser = bodyParser.urlencoded({ extended: false });
+const multer = require('multer');
+const upload = multer({ dest: 'tmp_uploads/' });
+
+// const url_encoded_Parser = bodyParser.urlencoded({ extended: false });
 
 var app = express();
-
 // Setup view engine:
 app.set('view engine', 'ejs');
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 //順序:由上而下。
 //若有路徑衝突，會優先send上層之連結。
@@ -21,12 +27,65 @@ app.get('/try-qs', (req, res) => {
     res.json(output.urlParts);
 
 });
-// app.get('/try-post', (req, res) => {
-//     res.render('try-post');
-// });
-app.post('/try-post', url_encoded_Parser, (req, res) => {
+
+//POST表單:
+app.get('/try-post', (req, res) => {
+    res.render('try-post');
+});
+app.post('/try-post', (req, res) => {
     // res.render('try-post', req.body);
     res.json(req.body);
+});
+
+//Upload image:
+// app.get('/try-upload', (req, res) => {
+//     res.render('try-upload');
+// })
+app.post('/try-upload', upload.single('avatar'), (req, res) => {
+    console.log(req.file);
+    if (req.file && req.file.originalname) {
+        let ext = '';
+        switch (req.file.mimetype) {
+            case "image/jpeg":
+                ext = '.jpeg';
+                break;
+            case "image/png":
+                ext = '.png';
+                break;
+            case "image/jpg":
+                ext = '.jpg';
+                break;
+            case "image/gif":
+                ext = '.gif';
+                break;
+        }
+        if (ext) {
+            let filemname = uuid.v4() + ext;
+            fs.rename(
+                req.file.path,
+                './public/img/' + filemname,
+                error => { }
+            );
+        } else {
+            fs.unlink(req.file.path, error => { });
+        }
+
+        // if (/\.(jpg|jpeg|png|gif)$/i.test(req.file.originalname)) {
+        //     fs.rename(req.file.path, './public/img/' + req.file.originalname, error => { });
+        // } else {
+        //     fs.unlink(req.file.path, error => { });
+        // }
+    };
+    res.json({
+        body: req.body,
+        file: req.file
+    });
+
+    // res.render('try-upload', {
+    //     result: true,
+    //     name: req.body.name,
+    //     avatar: '/img/' + req.file.originalname
+    // });
 });
 
 // Link to designated pages.

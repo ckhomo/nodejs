@@ -4,6 +4,7 @@
 /node_modules
 /public/bootstrap
 /public/jquery
-
+/public/img
+/tmp_uploads
 
 

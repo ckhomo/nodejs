@@ -2,17 +2,17 @@
 <%- include('parts/navbar') %>
 <%# views/try-post.ejs %>
 <div class="col-lg-6">
-    <form method="post" enctype="application/x-www-form-urlencoded">
+    <form name="trypost" method="POST" onsubmit="return checkEmpty()">
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" class="form-control" name="email">
+            <input type="email" class="form-control" name="email" id="email">
             <% if(typeof email !== 'undefined'){ %>
             <small>上次輸入: <%= email %></small>
             <% } %>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="text" class="form-control" name="password">
+            <input type="text" class="form-control" name="password" id="password">
             <% if(locals.password){ %>
             <small>上次輸入: <%= password %></small>
             <% } %>
@@ -20,4 +20,40 @@
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
+<script>
+    function checkEmpty() {
+
+        const output = {
+            email: email.value,
+            password: password.value,
+        };
+
+        fetch('/try-post', {
+            method: 'POST',
+            body: JSON.stringify(output),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(r => r.json())
+            .then(obj => {
+                console.log(obj);
+            });
+
+        // fetch('/try-post', {
+        //     method: 'POST',
+        //     body: `email=${encodeURIComponent(email.value)}&password=${encodeURIComponent(password.value)}`,
+        //     headers: {
+        //         'content-type': 'application/x-www-form-urlencoded'
+        //     }
+        // }).then(r => r.json())
+        //     .then(obj => {
+        //         console.log(obj);
+        //     });
+
+        // $.post('/try-post', $('form[name=trypost]').serialize(), function(data){
+        //     console.log(data);
+        // },'json');
+        return false;
+    }
+</script>
 <%- include('parts/html_foot') %>
