@@ -17,7 +17,6 @@ app.use(express.json());
 
 //順序:由上而下。
 //若有路徑衝突，會優先send上層之連結。
-
 app.get('/try-qs', (req, res) => {
     const output = {
         url: req.url,
@@ -43,6 +42,7 @@ app.get('/try-upload', (req, res) => {
 })
 app.post('/try-upload', upload.single('avatar'), (req, res) => {
     console.log(req.file);
+    let filename = "";
     if (req.file && req.file.originalname) {
         let ext = '';
         switch (req.file.mimetype) {
@@ -60,14 +60,25 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
                 break;
         }
         if (ext) {
-            let filename = uuid.v4() + ext;
+            filename = uuid.v4() + ext;
             fs.rename(
                 req.file.path,
                 './public/img/' + filename,
                 error => { }
+
             );
+            res.render('try-upload', {
+                result: true,
+                name: req.file.originalname,
+                avatar: '/img/' + filename
+            });
         } else {
             fs.unlink(req.file.path, error => { });
+            res.render('try-upload', {
+                result: "",
+                name: "",
+                avatar: ""
+            });
         }
 
         // if (/\.(jpg|jpeg|png|gif)$/i.test(req.file.originalname)) {
@@ -80,24 +91,27 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
     //     body: req.body,
     //     file: req.file
     // });
-
     res.render('try-upload', {
-        result: true,
-        name: req.body.name,
-        avatar: '/img/' + req.file.originalname
+        result: "",
+        name: "",
+        avatar: ""
     });
+
 });
 
-// Link to designated pages.
-app.get('/', (req, res) => {
-    // res.send(`<h2>Hello Mr.Lee!</h2>`);
-    res.render('home', { name: "ckhomo" });
-});
+// Router sol(1):
+// const admin1 = require(__dirname+'/admin/admin1');
+// admin1(app);
+require(__dirname+'/admin/admin1')(app);
 
-app.get('/try', (req, res) => {
-    res.send(`<h2>TRY THIS ROUTER.</h2>`);
-});
+// Router sol(2):
+app.use(require(__dirname+'/admin/admin2'));
 
+//Router sol(3):
+// module 裡面的路徑用相對路徑
+app.use('/admin3', require(__dirname + '/admin/admin3'));
+
+//Read json.
 app.get('/sales', (req, res) => {
     const data = require(__dirname + '/../data/sales');
     // res.send(`<h2>${data[0].name}</h2>`);
