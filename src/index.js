@@ -38,9 +38,9 @@ app.post('/try-post', (req, res) => {
 });
 
 //Upload image:
-// app.get('/try-upload', (req, res) => {
-//     res.render('try-upload');
-// })
+app.get('/try-upload', (req, res) => {
+    res.render('try-upload');
+})
 app.post('/try-upload', upload.single('avatar'), (req, res) => {
     console.log(req.file);
     if (req.file && req.file.originalname) {
@@ -60,10 +60,10 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
                 break;
         }
         if (ext) {
-            let filemname = uuid.v4() + ext;
+            let filename = uuid.v4() + ext;
             fs.rename(
                 req.file.path,
-                './public/img/' + filemname,
+                './public/img/' + filename,
                 error => { }
             );
         } else {
@@ -76,16 +76,16 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
         //     fs.unlink(req.file.path, error => { });
         // }
     };
-    res.json({
-        body: req.body,
-        file: req.file
-    });
-
-    // res.render('try-upload', {
-    //     result: true,
-    //     name: req.body.name,
-    //     avatar: '/img/' + req.file.originalname
+    // res.json({
+    //     body: req.body,
+    //     file: req.file
     // });
+
+    res.render('try-upload', {
+        result: true,
+        name: req.body.name,
+        avatar: '/img/' + req.file.originalname
+    });
 });
 
 // Link to designated pages.
