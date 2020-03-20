@@ -1,4 +1,8 @@
 const express = require('express');
+const url = require('url');
+const bodyParser = require('body-parser');
+
+const url_encoded_Parser = bodyParser.urlencoded({ extended: false });
 
 var app = express();
 
@@ -7,6 +11,23 @@ app.set('view engine', 'ejs');
 
 //順序:由上而下。
 //若有路徑衝突，會優先send上層之連結。
+
+app.get('/try-qs', (req, res) => {
+    const output = {
+        url: req.url,
+    };
+    output.urlParts = url.parse(req.url, true);
+    // res.json(output);
+    res.json(output.urlParts);
+
+});
+// app.get('/try-post', (req, res) => {
+//     res.render('try-post');
+// });
+app.post('/try-post', url_encoded_Parser, (req, res) => {
+    // res.render('try-post', req.body);
+    res.json(req.body);
+});
 
 // Link to designated pages.
 app.get('/', (req, res) => {
