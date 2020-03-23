@@ -14,6 +14,7 @@
         <button type="submit" class="btn btn-primary">登入</button>
     </form>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 <script>
     function checkForm() {
         const output = {
@@ -29,6 +30,12 @@
         }).then(response => response.json())
             .then(obj => {
                 console.log(obj);
+                if (obj.success) {
+                    location.href = '/';
+                } else {
+                    Swal.fire(obj.error);
+                    // alert(obj.error);
+                }
             });
         return false;
     }

@@ -8,6 +8,9 @@ const multer = require('multer');
 const upload = multer({ dest: 'tmp_uploads/' });
 const session = require('express-session');
 
+// const moment = require('moment');
+const moment = require('moment-timezone');
+
 //For fun.
 // const Swal = require('sweetalert2');
 
@@ -29,6 +32,16 @@ app.use(session({
     }
 }));
 
+//Middleware(Login check):
+app.use((req, res, next) => {
+    if (req.session.LoginUser) {
+        res.locals.LoginUser = req.session.LoginUser;
+    } else {
+        res.locals.LoginUser = {};
+    }
+    next();
+})
+
 //順序:由上而下。
 //若有路徑衝突，會優先send上層之連結。
 
@@ -47,16 +60,6 @@ app.use('/member', require(__dirname + '/route/member'));
 app.get('/sess', (req, res) => {
     res.json(req.session);
 });
-
-//Middleware(Login check):
-app.use((req, res, next) => {
-    if (req.session.LoginUser) {
-        res.locals.LoginUser = req.session.LoginUser;
-    } else {
-        res.locals.LoginUser = {};
-    }
-    next();
-})
 
 app.get('/try-qs', (req, res) => {
     const output = {
@@ -153,6 +156,23 @@ app.get('/sales', (req, res) => {
     res.render('sales', {
         sales: data
     });
+});
+
+//moment.js:
+app.get('/try-moment', (req, res) => {
+    const fm = 'YYYY-MM-DD HH:mm:ss';
+    const mo1 = moment(req.session.cookie.expires);
+    const mo2 = moment(new Date());
+    const mo3 = moment('2020-02-18');
+    res.json({
+        'local-mo1': mo1.format(fm),
+        'local-mo2': mo2.format(fm),
+        'local-mo3': mo3.format(fm),
+        'london-mo1': mo1.tz('Europe/London').format(fm),
+        'london-mo2': mo2.tz('Europe/London').format(fm),
+        'london-mo3': mo3.tz('Europe/London').format(fm),
+    });
+
 });
 
 // Static folder:

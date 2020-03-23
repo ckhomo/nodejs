@@ -6,22 +6,33 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="nav-link" href="/try-upload">UPLOAD<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/sales">SALES<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/sess">SESSION</a>
             </li>
         </ul>
         <ul class="navbar-nav">
-            <% if(locals.LoginUser)%>
+            <% if(locals.LoginUser && locals.LoginUser.account){ %>
             <li class="nav-item">
-                <a class="nav-link" href="/member/login">登入<span class="sr-only">(current)</span></a>
+                <a class="nav-link"><%= LoginUser.nickname %></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link" href="/member/logout">登出</a>
             </li>
+            <% } else { %>
+            <li class="nav-item">
+                <a class="nav-link" href="/member/login">登入</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/member/register">註冊</a>
+            </li>
+            <% } %>
         </ul>
     </div>
 </nav>

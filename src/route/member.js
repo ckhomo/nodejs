@@ -21,7 +21,7 @@ router.post('/login', (req, res) => {
     const output = {
         //Success or not:
         success: false,
-        error: '帳號或密碼錯誤',
+        error: 'Invalid account or password!',
         body: req.body
     };
 
@@ -43,4 +43,8 @@ router.post('/login', (req, res) => {
     // res.json(req.session);
 });
 
+router.get('/logout',(req,res)=>{
+    delete req.session.LoginUser;
+    res.redirect('/');
+})
 module.exports = router;
