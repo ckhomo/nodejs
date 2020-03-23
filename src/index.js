@@ -44,6 +44,19 @@ app.get('/try-session', (req, res) => {
 
 //DO LOGIN(middleware):
 app.use('/member', require(__dirname + '/route/member'));
+app.get('/sess', (req, res) => {
+    res.json(req.session);
+});
+
+//Middleware(Login check):
+app.use((req, res, next) => {
+    if (req.session.LoginUser) {
+        res.locals.LoginUser = req.session.LoginUser;
+    } else {
+        res.locals.LoginUser = {};
+    }
+    next();
+})
 
 app.get('/try-qs', (req, res) => {
     const output = {

@@ -11,8 +11,26 @@
             <label for="password">密碼</label>
             <input type="password" class="form-control" id="password" name="password">
         </div>
-
         <button type="submit" class="btn btn-primary">登入</button>
     </form>
 </div>
+<script>
+    function checkForm() {
+        const output = {
+            account: document.querySelector('#email').value,
+            password: document.querySelector('#password').value,
+        }
+        fetch('/member/login', {
+            method: 'POST',
+            body: JSON.stringify(output),
+            headers: {
+                'content-type': "application/json"
+            }
+        }).then(response => response.json())
+            .then(obj => {
+                console.log(obj);
+            });
+        return false;
+    }
+</script>
 <%- include('../parts/html_foot') %>
