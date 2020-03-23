@@ -28,9 +28,9 @@ app.get('/try-qs', (req, res) => {
 });
 
 //POST表單:
-app.get('/try-post', (req, res) => {
-    res.render('try-post');
-});
+// app.get('/try-post', (req, res) => {
+//     res.render('try-post');
+// });
 app.post('/try-post', (req, res) => {
     // res.render('try-post', req.body);
     res.json(req.body);
@@ -42,7 +42,16 @@ app.get('/try-upload', (req, res) => {
 })
 app.post('/try-upload', upload.single('avatar'), (req, res) => {
     console.log(req.file);
+    const output = {
+        body: req.body,
+        file: req.file,
+    };
     let filename = "";
+    // let output = {
+    //     result: true,
+    //     name: req.file.originalname,
+    //     avatar: '/img/' + filename
+    // }
     if (req.file && req.file.originalname) {
         let ext = '';
         switch (req.file.mimetype) {
@@ -60,25 +69,20 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
                 break;
         }
         if (ext) {
-            filename = uuid.v4() + ext;
+            let filename = uuid.v4() + ext;
+            output.newName = filename;
             fs.rename(
                 req.file.path,
                 './public/img/' + filename,
-                error => { }
-
+                error=>{}
             );
-            res.render('try-upload', {
-                result: true,
-                name: req.file.originalname,
-                avatar: '/img/' + filename
-            });
+            // res.render('try-upload', {
+            //     result: true,
+            //     name: req.file.originalname,
+            //     avatar: '/img/' + filename
+            // });
         } else {
             fs.unlink(req.file.path, error => { });
-            res.render('try-upload', {
-                result: "",
-                name: "",
-                avatar: ""
-            });
         }
 
         // if (/\.(jpg|jpeg|png|gif)$/i.test(req.file.originalname)) {
@@ -87,25 +91,16 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
         //     fs.unlink(req.file.path, error => { });
         // }
     };
-    // res.json({
-    //     body: req.body,
-    //     file: req.file
-    // });
-    res.render('try-upload', {
-        result: "",
-        name: "",
-        avatar: ""
-    });
-
+    res.json(output);
 });
 
 // Router sol(1):
 // const admin1 = require(__dirname+'/admin/admin1');
 // admin1(app);
-require(__dirname+'/admin/admin1')(app);
+require(__dirname + '/admin/admin1')(app);
 
 // Router sol(2):
-app.use(require(__dirname+'/admin/admin2'));
+app.use(require(__dirname + '/admin/admin2'));
 
 //Router sol(3):
 // module 裡面的路徑用相對路徑

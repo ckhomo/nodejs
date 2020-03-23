@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<body>
+
+    <form name="form2" onsubmit="return checkForm()">
+
+        <label for="avatar">大頭貼 </label>
+        <input type="file" name="avatar" id="avatar"><br>
+
+        <label for="name">姓名 </label>
+        <input type="text" name="name" id="name"><br>
+
+        <input type="submit">
+
+    </form>
+
+    <img src="" alt="" id="myImg">
+    <script>
+        function checkForm() {
+            const formdata = new FormData(document.form2);
+            fetch('/try-upload', {
+                method: 'POST',
+                body: formdata, //entype: default as multipart/form-data
+            }).then(response => response.json())
+                .then(obj => {
+                    console.log(obj);
+                    console.log("/img/" + obj.newName);
+                    document.querySelector('#myImg').src = "/img/" + obj.newName;
+                });
+            return false;
+        }
+    </script>
+
+</body>
+
+</html>
