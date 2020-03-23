@@ -6,6 +6,10 @@ const uuid = require('uuid');
 
 const multer = require('multer');
 const upload = multer({ dest: 'tmp_uploads/' });
+const session = require('express-session');
+
+//For fun.
+// const Swal = require('sweetalert2');
 
 // const url_encoded_Parser = bodyParser.urlencoded({ extended: false });
 
@@ -15,8 +19,32 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+//SESSION setup:
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    secret: 'do_svidaniya',
+    cookie: {
+        maxAge: 1000 * 60 * 20,
+    }
+}));
+
 //順序:由上而下。
 //若有路徑衝突，會優先send上層之連結。
+
+//SESSION:
+app.get('/try-session', (req, res) => {
+    req.session.my_var = req.session.my_var || 0;
+    req.session.my_var++;
+    res.json({
+        my_var: req.session.my_var,
+        session: req.session
+    });
+});
+
+//DO LOGIN(middleware):
+app.use('/member', require(__dirname + '/route/member'));
+
 app.get('/try-qs', (req, res) => {
     const output = {
         url: req.url,
@@ -28,9 +56,9 @@ app.get('/try-qs', (req, res) => {
 });
 
 //POST表單:
-// app.get('/try-post', (req, res) => {
-//     res.render('try-post');
-// });
+app.get('/try-post', (req, res) => {
+    res.render('try-post');
+});
 app.post('/try-post', (req, res) => {
     // res.render('try-post', req.body);
     res.json(req.body);
@@ -47,11 +75,6 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
         file: req.file,
     };
     let filename = "";
-    // let output = {
-    //     result: true,
-    //     name: req.file.originalname,
-    //     avatar: '/img/' + filename
-    // }
     if (req.file && req.file.originalname) {
         let ext = '';
         switch (req.file.mimetype) {
@@ -74,13 +97,8 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
             fs.rename(
                 req.file.path,
                 './public/img/' + filename,
-                error=>{}
+                error => { }
             );
-            // res.render('try-upload', {
-            //     result: true,
-            //     name: req.file.originalname,
-            //     avatar: '/img/' + filename
-            // });
         } else {
             fs.unlink(req.file.path, error => { });
         }
@@ -91,7 +109,16 @@ app.post('/try-upload', upload.single('avatar'), (req, res) => {
         //     fs.unlink(req.file.path, error => { });
         // }
     };
+    //FOR: try-upload2,3.html
     res.json(output);
+
+    //FOR: try-upload.ejs
+    // res.render('try-upload', {
+    //     result: true,
+    //     name: output.file.originalname,
+    //     // avatar: '/img/' + filename
+    //     avatar: '/img/' + output.newName
+    // });
 });
 
 // Router sol(1):
