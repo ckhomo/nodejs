@@ -1,0 +1,43 @@
+<%- include('parts/html_head') %>
+<%- include('parts/navbar') %>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <thead>
+                <!-- <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Birthday</th>
+                </tr> -->
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Mobile</th>
+                    <th scope="col">Birthday</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Create Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%#for( let v of sales ) {%>
+                <!-- <tr>
+                    <td><%# v.sales_id %></td>
+                    <td><%# v.name %></td>
+                    <td><%# v.birthday2 %></td>
+                </tr> -->
+                <%#}%>
+                <% for(let v of addr_book){ %>
+                <tr>
+                    <td><%= v.name%></td>
+                    <td><%= v.email%></td>
+                    <td><%= v.mobile%></td>
+                    <td><%= v.birthday2%></td>
+                    <td><%= v.address%></td>
+                    <td><%= v.created_at2%></td>
+                </tr>
+                <%}%>
+            </tbody>
+        </table>
+    </div>
+</div>
+<%- include('parts/html_foot') %>

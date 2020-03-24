@@ -11,6 +11,9 @@ const session = require('express-session');
 // const moment = require('moment');
 const moment = require('moment-timezone');
 
+//Include db_connect.
+const db = require(__dirname + '/db_connect');
+
 //For fun.
 // const Swal = require('sweetalert2');
 
@@ -174,6 +177,42 @@ app.get('/try-moment', (req, res) => {
     });
 
 });
+
+//Show MySQL database:
+app.get('/sales_sql', (req, res) => {
+
+    //UPDATE:
+    // var sql = 'UPDATE ADDRESS_BOOK SET NAME=?, EMAIL=? WHERE SID=2';
+    // db.query(sql, ['馬英九', 'tw689@gmail.com'], (error, result) => {
+    //     // if (error) throw error;
+    //     if (error) {
+    //         console.log(error);
+    //     } else {
+    //         console.log(result);
+    //     }
+    //     res.json(result);
+    // })
+
+    //SELECT:
+    var sql = 'SELECT * FROM ADDRESS_BOOK';
+    db.query(sql, (error, result, field) => {
+        // if (error) throw error;
+        if(error){
+            console.log(error);
+        }else{
+            console.log(result, field);
+        }
+        for (let v of result) {
+            v.birthday2 = moment(v.birthday).format('YYYY-MM-DD');
+            v.created_at2 = moment(v.created_at).format('YYYY-MM-DD');
+        }
+        res.render('sales_sql', {
+            addr_book: result
+        });
+    })
+});
+//MySQL: CRUD
+app.use('/addr_book', require(__dirname +'/route/addr_book'));
 
 // Static folder:
 app.use(express.static("public"));
