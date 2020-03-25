@@ -21,6 +21,7 @@ CRUD:
 //Change page API:
 const express = require('express');
 const db = require(__dirname + '/../db_connect');
+const upload = require(__dirname + '/../upload');
 const router = express.Router();
 
 //Middleware: add title
@@ -28,6 +29,46 @@ router.use((req, res, next) => {
     res.locals.title = 'Address book';
     next();
 });
+
+router.get('/add', (req, res) => {
+    res.render('addr_book/add');
+});
+
+// upload.none() 用來解析 multipart/form-data 格式的 middleware
+router.post('/add', upload.none(), (req, res) => {
+    const output = {
+        success: false,
+        error: '',
+
+    };
+
+    //TODO: check input form-data
+    if (req.body.name.length < 2) {
+        output.error = '姓名字元長度太短';
+        return res.json(output);
+    };
+
+    const email_pattern = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    if (!email_pattern.test(req.body.email)) {
+        output.error = 'Email 格式錯誤';
+        return res.json(output);
+    };
+
+    var today = new Date();
+    req.body.created_at = today;
+    const sql = "INSERT INTO `address_book` SET ?";
+    db.queryAsync(sql, req.body)
+        .then(results => {
+            output.results = results;
+            if (results.affectedRows === 1) {
+                output.success = true;
+            } res.json(output);
+        })
+        .catch(ex => {
+            console.log('ex:', ex);
+        })
+
+})
 
 const moment = require('moment-timezone');
 
@@ -49,7 +90,7 @@ router.get('/:page?', (req, res) => {
             output.totalPages = Math.ceil(output.totalRows / perPage);
             if (output.page < 1) output.page = 1;
             if (output.page > output.totalPages) output.page = output.totalPages;
-            const sql = `SELECT * FROM address_book LIMIT ${(output.page - 1) * output.perPage}, ${output.perPage}`;
+            const sql = `SELECT * FROM address_book ORDER BY sid DESC LIMIT ${(output.page - 1) * output.perPage}, ${output.perPage}`;
             return db.queryAsync(sql);
         })
         .then(results => {

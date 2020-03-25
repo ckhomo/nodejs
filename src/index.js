@@ -4,8 +4,7 @@ const url = require('url');
 const fs = require('fs');
 const uuid = require('uuid');
 
-const multer = require('multer');
-const upload = multer({ dest: 'tmp_uploads/' });
+const upload = require(__dirname + '/upload');
 const session = require('express-session');
 
 // const moment = require('moment');
@@ -65,16 +64,16 @@ app.get('/sess', (req, res) => {
 });
 
 app.get('/try-qs', (req, res) => {
-    
+
     // res.json(req.query);
-    
+
     const output = {
         url: req.url,
     };
     output.urlParts = url.parse(req.url, true);
     // res.json(output);
     res.json(output.urlParts);
-    
+
 
 });
 
@@ -201,9 +200,9 @@ app.get('/sales_sql', (req, res) => {
     var sql = 'SELECT * FROM ADDRESS_BOOK';
     db.query(sql, (error, result, field) => {
         // if (error) throw error;
-        if(error){
+        if (error) {
             console.log(error);
-        }else{
+        } else {
             console.log(result, field);
         }
         for (let v of result) {
@@ -216,7 +215,7 @@ app.get('/sales_sql', (req, res) => {
     })
 });
 //MySQL: CRUD
-app.use('/addr_book', require(__dirname +'/route/addr_book'));
+app.use('/addr_book', require(__dirname + '/route/addr_book'));
 
 // Static folder:
 app.use(express.static("public"));
