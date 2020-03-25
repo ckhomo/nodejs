@@ -68,7 +68,7 @@ router.post('/add', upload.none(), (req, res) => {
             console.log('ex:', ex);
         })
 
-})
+});
 
 const moment = require('moment-timezone');
 
@@ -119,7 +119,62 @@ router.get('/:page?', (req, res) => {
     //         res.json(output);
     //     })
     // });
+});
 
+router.get('/delete/:sid?', (req, res) => {
+    const sql = 'DELETE FROM ADDRESS_BOOK WHERE sid=?';
+    db.queryAsync(sql, [req.params.sid])
+        .then(results => {
+            if (req.get("Referrer")) {
+                res.redirect(req.get('Referrer'));
+            } else {
+                res.redirect('/addr_book');
+            };
+        }).catch(ex => {
+            console.log('ex:', ex);
+            res.json({
+                success: false,
+                info: '無法刪除資料'
+            });
+        });
+});
+
+router.get('/edit/:sid', (req, res) => {
+    const sql = 'SELECT * FROM ADDRESS_BOOK WHERE SID=?';
+    db.queryAsync(sql, [req.params.sid])
+        .then(results => {
+            if (results.length) {
+                results[0].birthday = moment(results[0].birthday).format('YYYY-MM-DD');
+                res.render('addr_book/edit', results[0]);
+            } else {
+                res.redirect('/addr_book');
+            }
+        }).catch(ex => {
+            console.log('ex', ex);
+        });
+})
+
+router.post('/edit', upload.none(), (req, res) => {
+    const output = {
+        success: false,
+        error: '',
+    };
+
+    if (req.body.name.length < 2) {
+        output.error = '姓名字元長度太短';
+        return res.json(output);
+    }
+
+    const email_pattern = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    if (!email_pattern.test(req.body.email)) {
+        output.error = 'Email 格式錯誤';
+        return res.json(output);
+    }
+
+    const data = { ...req.body };
+    res.json(data);
+
+    return;
 });
 
 module.exports = router;
