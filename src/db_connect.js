@@ -11,7 +11,7 @@ var db = mysql.createConnection({
 });
 db.on('error', ex=>{
 console.log(ex);
-})
+});
 db.connect();
 bluebird.promisifyAll(db);
 module.exports = db;

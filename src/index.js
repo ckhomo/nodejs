@@ -65,12 +65,16 @@ app.get('/sess', (req, res) => {
 });
 
 app.get('/try-qs', (req, res) => {
+    
+    // res.json(req.query);
+    
     const output = {
         url: req.url,
     };
     output.urlParts = url.parse(req.url, true);
     // res.json(output);
     res.json(output.urlParts);
+    
 
 });
 

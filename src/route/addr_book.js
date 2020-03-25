@@ -18,10 +18,18 @@ CRUD:
  */
 
 
- //Change page API:
+//Change page API:
 const express = require('express');
 const db = require(__dirname + '/../db_connect');
 const router = express.Router();
+
+//Middleware: add title
+router.use((req, res, next) => {
+    res.locals.title = 'Address book';
+    next();
+});
+
+const moment = require('moment-timezone');
 
 router.get('/:page?', (req, res) => {
     const perPage = 3;
@@ -36,22 +44,26 @@ router.get('/:page?', (req, res) => {
     const t_sql = "SELECT COUNT(1) num FROM ADDRESS_BOOK";
 
     db.queryAsync(t_sql)
-        .then(results=>{
+        .then(results => {
             output.totalRows = results[0].num;
-            output.totalPages = Math.ceil(output.totalRows/perPage);
-            if(output.page < 1) output.page=1;
-            if(output.page > output.totalPages) output.page=output.totalPages;
-            const sql = `SELECT * FROM address_book LIMIT ${(output.page-1)*output.perPage}, ${output.perPage}`;
+            output.totalPages = Math.ceil(output.totalRows / perPage);
+            if (output.page < 1) output.page = 1;
+            if (output.page > output.totalPages) output.page = output.totalPages;
+            const sql = `SELECT * FROM address_book LIMIT ${(output.page - 1) * output.perPage}, ${output.perPage}`;
             return db.queryAsync(sql);
         })
-        .then(results=>{
+        .then(results => {
+            for (let i of results) {
+                i.birthday = moment(i.birthday).format('YYYY-MM-DD');
+            };
             output.rows = results;
-            res.json(output);
+            // res.json(output);
+            res.render('addr_book/list', output);
         })
-        .catch(ex=>{
+        .catch(ex => {
 
         });
-    
+
     // db.query(t_sql, (error, results) => {
     //     output.totalRows = results[0].num;
     //     output.totalPages = Math.ceil(output.totalRows / perPage);
