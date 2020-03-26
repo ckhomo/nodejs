@@ -54,8 +54,7 @@ router.post('/add', upload.none(), (req, res) => {
         return res.json(output);
     };
 
-    var today = new Date();
-    req.body.created_at = today;
+    req.body.created_at = new Date();
     const sql = "INSERT INTO `address_book` SET ?";
     db.queryAsync(sql, req.body)
         .then(results => {
