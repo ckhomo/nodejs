@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<script>
+    const ar1 = [5,6,7,8, ['a', 'b', 'c']];
+    const ar2 = ar1; // 設定參照
+
+    const ar3 = ar1.concat(); // 淺層複製 // ar1.slice();
+    const ar4 = ['aaa', ...ar1];
+    const ar5 = JSON.parse(JSON.stringify(ar1));
+
+    ar1[1] = 66;
+    ar1[4][0] = 'xyz';
+
+    console.log('ar1:', ar1);
+    console.log('ar2:', ar2);
+    console.log('ar3:', ar3);
+    console.log('ar4:', ar4);
+    console.log('ar5:', ar5);
+
+
+    function f1(x, ...a){
+        console.log('x:', x);
+        console.log('a:', a);
+    }
+
+    f1();
+    f1(6);
+    f1(1,2,3);
+    f1([1,2,3]);
+
+
+
+</script>
+</body>
+</html>

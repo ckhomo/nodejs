@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<script>
+    const p = {name:'bill', age:25, data:{a:1, b:2}}
+    const p2 = p; // 設定參照 reference
+    const p3 = {...p, cc:'hi'}; // destruct // 淺層複製
+    const p4 = JSON.parse(JSON.stringify(p));
+    p.age = 30;
+    p.data.a = 123;
+
+    console.log('p:', p);
+    console.log('p2:', p2);
+    console.log('p3:', p3);
+    console.log('p4:', p4);
+
+    const p5 = {name:'david', age:22};
+    const p6 = {name:'aaron', age:26};
+    const p7 = {name:'flora', age:23};
+    p5.next = p6;
+    p6.next = p7;
+    p7.next = p5;
+
+    console.log(JSON.stringify(p5)); // error
+
+
+
+
+
+</script>
+</body>
+</html>
