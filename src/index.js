@@ -215,6 +215,7 @@ app.get('/sales_sql', (req, res) => {
     })
 });
 //MySQL: CRUD
+//BaseUrl:
 app.use('/addr_book', require(__dirname + '/route/addr_book'));
 
 // Static folder:
