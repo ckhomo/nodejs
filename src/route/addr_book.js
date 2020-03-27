@@ -147,6 +147,13 @@ const getDataByPage = (req) => {
     const perPage = 3;
 
     return new Promise((resolve, reject) => {
+        if (!req.session.LoginUser) {
+            resolve({
+                success: false,
+                info: "Please login first."
+            });
+            return;
+        }
         let page = parseInt(req.params.page) || 1;
         const output = {
             totalRows: 0, // 總筆數
@@ -172,6 +179,8 @@ const getDataByPage = (req) => {
                     i.birthday = moment(i.birthday).format(fm);
                 }
                 output.rows = results;
+                output.user = req.session.LoginUser || {};
+                output.success = true;
                 resolve(output);
             })
             .catch(ex => {
@@ -181,12 +190,12 @@ const getDataByPage = (req) => {
 
 };
 //async 需與 await 共存(非同步)
-router.get('/list/:page?', async (req, res)=>{
+router.get('/list/:page?', async (req, res) => {
     const output = await getDataByPage(req);
     res.json(output);
 });
 
-router.get('/:page?', async (req, res)=>{
+router.get('/:page?', async (req, res) => {
     const output = await getDataByPage(req);
     res.render('addr_book/list', output);
 });

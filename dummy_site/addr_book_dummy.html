@@ -63,10 +63,13 @@
 
     function changePage(page) {
         var target_Url = 'http://192.168.103.8:5487/addr_book/list/' + page;
-        fetch(target_Url,{credentials:"include"})
+        fetch(target_Url, { credentials: "include" })
             .then(r => r.json())
             .then(obj => {
                 console.log(obj);
+                if (obj.success === false) {
+                    return;
+                }
                 let str = '';
                 for (let i of obj.rows) {
                     str += dataRowFn(i);
@@ -87,7 +90,6 @@
     $(document).ready(function () {
         changePage(1);// Call when first loaded in.
     });
-
 
 </script>
 

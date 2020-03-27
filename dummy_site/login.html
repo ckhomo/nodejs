@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/public/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/fontawesome/css/all.min.css">
+    <script src="/public/jquery/jquery-3.4.1.js"></script>
+    <script src="/public/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/public/fontawesome/js/all.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="row" style="padding-top: 3rem;">
+        <div class="col">
+            <form name="form1" method="post" onsubmit="return checkForm()">
+                <div class="form-group">
+                    <label for="email">帳號</label>
+                    <input type="text" class="form-control" id="email" name="email">
+                    <small id="emailHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group">
+                    <label for="password">密碼</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                </div>
+
+                <button type="submit" class="btn btn-primary">登入</button>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        function checkForm() {
+            const output = {
+                account: document.querySelector('#email').value,
+                password: document.querySelector('#password').value,
+            };
+            fetch('http://192.168.103.8:5487/member/login', {
+                method: 'POST',
+                body: JSON.stringify(output),
+                credentials: 'include',  // cross origin
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(r => r.json())
+                .then(obj => {
+                    console.log(obj);
+                    if(obj.success){
+                        location.href = 'addr_book_dummy.html';
+                    } else {
+                        alert(obj.error);
+                    }
+                });
+            return false;
+        }
+    </script>
+</div>
+
+</body>
+</html>

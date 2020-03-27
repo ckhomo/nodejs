@@ -44,7 +44,7 @@ const cors_opt = {
         } else {
             callback(null, true);
         }
-    }
+    },
     // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     // allowedHeaders: ['Content-Type', 'Authorization'],
 }
@@ -80,7 +80,7 @@ app.use(session({
     resave: false,
     secret: 'do_svidaniya',
     cookie: {
-        maxAge: 1000 * 60 * 20,
+        maxAge: 1000 * 60 * 5,
     }
 }));
 
@@ -280,5 +280,8 @@ app.use((req, res) => {
 });
 
 app.listen(5487, function () {
+    // console.log('global:', global);
+    // console.log('process.env:', process.env);
+    console.log('process.argv:', process.argv);
     console.log("Listening on port:5487.");
 });
