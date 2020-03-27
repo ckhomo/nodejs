@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/public/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/fontawesome/css/all.min.css">
+    <script src="/public/jquery/jquery-3.4.1.js"></script>
+    <script src="/public/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/public/fontawesome/js/all.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item" id='1' style="cursor: pointer;">
+                            <a class="page-link" onclick="fetchData(1)">1</a>
+                        </li>
+                        <li class="page-item" id='2' style="cursor: pointer;">
+                            <a class="page-link" onclick="fetchData(2)">2</a>
+                        </li>
+                        <li class="page-item" id='3' style="cursor: pointer;">
+                            <a class="page-link" onclick="fetchData(3)">3</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">姓名</th>
+                    <th scope="col">電郵</th>
+                    <th scope="col">手機</th>
+                    <th scope="col">生日</th>
+                    <th scope="col">住址</th>
+                </tr>
+            </thead>
+            <tbody id="tBody">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const dataRowFn = (obj) => {
+            return `
+<tr>
+    <td>${obj.sid}</td>
+    <td>${obj.name}</td>
+    <td>${obj.email}</td>
+    <td>${obj.mobile}</td>
+    <td>${obj.birthday}</td>
+    <td>${obj.address}</td>
+</tr>`;
+
+        };
+        function fetchData(num) {
+            $('ul li').removeClass('active');
+            $(`#${num}`).addClass('active');
+            var target_url = "http://192.168.103.8:5487/addr_book/list/";
+            target_url += num;
+            fetch(target_url)
+                .then(r => r.json())
+                .then(obj => {
+                    console.log(obj);
+                    let str = '';
+                    for (let i of obj.rows) {
+                        str += dataRowFn(i);
+                    }
+                    tBody.innerHTML = str;
+                });
+        }
+        $(document).ready(function () {
+
+            fetchData(1);
+
+        });
+
+    </script>
+</body>
+
+</html>

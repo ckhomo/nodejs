@@ -3,6 +3,9 @@ const url = require('url');
 // const bodyParser = require('body-parser');
 const fs = require('fs');
 const uuid = require('uuid');
+const cors = require('cors');
+const axios = require('axios');
+const cheerio = require('cheerio');
 
 const upload = require(__dirname + '/upload');
 const session = require('express-session');
@@ -23,6 +26,32 @@ var app = express();
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+//CORS: Allow other sites to access your JSON.
+app.use(cors());
+
+//Web crawler:
+app.get('/crawler', (req, res) => {
+    axios.get('https://tw.yahoo.com')
+    // axios.get('https://www.facebook.com/profile.php?id=100006793098574')
+        .then(response => {
+            //res.send(response.data);
+
+            const $ = cheerio.load(response.data);
+            const url_Arr = new Array();
+
+            $('img').each(function (i, el) {
+                // console.log(el.attribs.src);
+                // res.write(el.attribs.src + '\n');
+                url_Arr[i] = el.attribs.src;
+            });
+            // res.end('');
+            res.render('crawler_show', {
+                url_Arr: url_Arr
+            });
+        });
+
+});
 
 //SESSION setup:
 app.use(session({
@@ -73,8 +102,6 @@ app.get('/try-qs', (req, res) => {
     output.urlParts = url.parse(req.url, true);
     // res.json(output);
     res.json(output.urlParts);
-
-
 });
 
 //POST表單:
