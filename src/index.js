@@ -27,13 +27,34 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+const whiteList = [
+    "http://127.0.0.1:5500",
+    "http://localhost:5500",
+    "http://127.0.0.1:5487",
+    "http://localhost:5487",
+    undefined,
+];
+
+const cors_opt = {
+    credentials: true,
+    origin: function (origin, callback) {
+        console.log('origin:', origin);
+        if (whiteList.indexOf(origin) < 0) {
+            callback(null, false); // 不給過
+        } else {
+            callback(null, true);
+        }
+    }
+    // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    // allowedHeaders: ['Content-Type', 'Authorization'],
+}
 //CORS: Allow other sites to access your JSON.
-app.use(cors());
+app.use(cors(cors_opt));
 
 //Web crawler:
 app.get('/crawler', (req, res) => {
     axios.get('https://tw.yahoo.com')
-    // axios.get('https://www.facebook.com/profile.php?id=100006793098574')
+        // axios.get('https://www.facebook.com/profile.php?id=100006793098574')
         .then(response => {
             //res.send(response.data);
 

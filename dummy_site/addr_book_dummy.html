@@ -18,15 +18,7 @@
             <div class="col">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination">
-                        <li class="page-item" id='1' style="cursor: pointer;">
-                            <a class="page-link" onclick="fetchData(1)">1</a>
-                        </li>
-                        <li class="page-item" id='2' style="cursor: pointer;">
-                            <a class="page-link" onclick="fetchData(2)">2</a>
-                        </li>
-                        <li class="page-item" id='3' style="cursor: pointer;">
-                            <a class="page-link" onclick="fetchData(3)">3</a>
-                        </li>
+                        <!-- dataPagination insert to here. -->
                     </ul>
                 </nav>
             </div>
@@ -44,46 +36,59 @@
                 </tr>
             </thead>
             <tbody id="tBody">
+                <!-- dataRowFn insert to here. -->
             </tbody>
         </table>
     </div>
-
-    <script>
-        const dataRowFn = (obj) => {
-            return `
-<tr>
-    <td>${obj.sid}</td>
-    <td>${obj.name}</td>
-    <td>${obj.email}</td>
-    <td>${obj.mobile}</td>
-    <td>${obj.birthday}</td>
-    <td>${obj.address}</td>
-</tr>`;
-
-        };
-        function fetchData(num) {
-            $('ul li').removeClass('active');
-            $(`#${num}`).addClass('active');
-            var target_url = "http://192.168.103.8:5487/addr_book/list/";
-            target_url += num;
-            fetch(target_url)
-                .then(r => r.json())
-                .then(obj => {
-                    console.log(obj);
-                    let str = '';
-                    for (let i of obj.rows) {
-                        str += dataRowFn(i);
-                    }
-                    tBody.innerHTML = str;
-                });
-        }
-        $(document).ready(function () {
-
-            fetchData(1);
-
-        });
-
-    </script>
 </body>
+<script>
+    const dataRowFn = (obj) => {
+        return `
+    <tr>
+        <td>${obj.sid}</td>
+        <td>${obj.name}</td>
+        <td>${obj.email}</td>
+        <td>${obj.mobile}</td>
+        <td>${obj.birthday}</td>
+        <td>${obj.address}</td>
+    </tr>`;
+
+    };
+    const dataPagination = (obj) => {
+        // Page: 頁碼, active: 當頁 'active' || ''
+        return `
+        <li class="page-item ${obj.active}">
+        <a class="page-link" href="javascript:changePage(${obj.page})">${obj.page}</a></li>`;
+    };
+
+    function changePage(page) {
+        var target_Url = 'http://192.168.103.8:5487/addr_book/list/' + page;
+        fetch(target_Url,{credentials:"include"})
+            .then(r => r.json())
+            .then(obj => {
+                console.log(obj);
+                let str = '';
+                for (let i of obj.rows) {
+                    str += dataRowFn(i);
+                }
+                tBody.innerHTML = str;
+
+                str = '';
+                for (let i = 1; i <= obj.totalPages; i++) {
+                    str += dataPagination({
+                        page: i,
+                        active: i === obj.page ? 'active' : ''
+                    });
+                };
+                // $('.pagination').innerHTML = str;
+                document.querySelector('.pagination').innerHTML = str;
+            });
+    };
+    $(document).ready(function () {
+        changePage(1);// Call when first loaded in.
+    });
+
+
+</script>
 
 </html>

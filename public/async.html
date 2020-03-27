@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id='rand'></div>
+
+</body>
+<script>
+
+    var rand = document.getElementById('rand');
+    const ar = [];
+    
+    function AsyncFc() {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(Math.floor(Math.random() * 100));
+            }, 100 + Math.random() * 5000);
+        });
+    }
+
+    // async function myWork() {
+    //     let r = await AsyncFc();
+    //     rand.innerHTML += r + '<br>';
+    //     ar.push(r);
+
+    //     r = await AsyncFc();
+    //     rand.innerHTML += r + '<br>';
+    //     ar.push(r);
+
+    //     r = await AsyncFc();
+    //     rand.innerHTML += r + '<br>';
+    //     ar.push(r);
+
+    //     console.log(ar);
+    // }
+    // myWork();
+
+    AsyncFc()
+        .then(r => {
+            rand.innerHTML += r + '<br>';
+            ar.push(r);
+            return AsyncFc();
+        })
+        .then(r => {
+            rand.innerHTML += r + '<br>';
+            ar.push(r);
+            return AsyncFc();
+        })
+        .then(r => {
+            rand.innerHTML += r + '<br>';
+            ar.push(r);
+            console.log(ar);
+        });
+
+</script>
+
+</html>

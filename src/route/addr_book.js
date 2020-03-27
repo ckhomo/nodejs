@@ -143,73 +143,53 @@ router.post('/edit', upload.none(), (req, res) => {
 //============編輯: END HERE.
 
 //============讀入表單:
-const getDataByPage = (req, res) => {
+const getDataByPage = (req) => {
     const perPage = 3;
-    let page = parseInt(req.params.page) || 1;
-    const output = {
-        totalRows: 0, // 總筆數
-        perPage: perPage, // 每一頁最多幾筆
-        totalPages: 0, //總頁數
-        page: page, // 用戶要查看的頁數
-        rows: 0, // 當頁的資料
-    };
-    const t_sql = "SELECT COUNT(1) num FROM ADDRESS_BOOK";
 
-    db.queryAsync(t_sql)
-        .then(results => {
-            output.totalRows = results[0].num;
-            output.totalPages = Math.ceil(output.totalRows / perPage);
-            if (output.page < 1) output.page = 1;
-            if (output.page > output.totalPages) output.page = output.totalPages;
-            const sql = `SELECT * FROM address_book ORDER BY sid DESC LIMIT ${(output.page - 1) * output.perPage}, ${output.perPage}`;
-            return db.queryAsync(sql);
-        })
-        .then(results => {
-            for (let i of results) {
-                i.birthday = moment(i.birthday).format('YYYY-MM-DD');
-            };
-            output.rows = results;
-            // res.json(output);
-            res.render('addr_book/list', output);
-        })
-        .catch(ex => {
+    return new Promise((resolve, reject) => {
+        let page = parseInt(req.params.page) || 1;
+        const output = {
+            totalRows: 0, // 總筆數
+            perPage: perPage, // 每一頁最多幾筆
+            totalPages: 0, //總頁數
+            page: page, // 用戶要查看的頁數
+            rows: 0, // 當頁的資料
+        };
 
-        });
+        const t_sql = "SELECT COUNT(1) num FROM address_book";
+        db.queryAsync(t_sql)
+            .then(results => {
+                output.totalRows = results[0].num;
+                output.totalPages = Math.ceil(output.totalRows / perPage);
+                if (output.page < 1) output.page = 1;
+                if (output.page > output.totalPages) output.page = output.totalPages;
+                const sql = `SELECT * FROM address_book ORDER BY sid DESC LIMIT ${(output.page - 1) * output.perPage}, ${output.perPage}`;
+                return db.queryAsync(sql);
+            })
+            .then(results => {
+                const fm = 'YYYY-MM-DD';
+                for (let i of results) {
+                    i.birthday = moment(i.birthday).format(fm);
+                }
+                output.rows = results;
+                resolve(output);
+            })
+            .catch(ex => {
+                reject(ex);
+            });
+    });
+
 };
-router.get('/:page?', getDataByPage);
-//============讀入表單: END HERE.
-
-router.get('/list/:page?', (req, res) => {
-    const perPage = 3;
-    let page = parseInt(req.params.page) || 1;
-    const output = {
-        totalRows: 0, // 總筆數
-        perPage: perPage, // 每一頁最多幾筆
-        totalPages: 0, //總頁數
-        page: page, // 用戶要查看的頁數
-        rows: 0, // 當頁的資料
-    };
-
-    const t_sql = "SELECT COUNT(1) num FROM address_book";
-    db.queryAsync(t_sql)
-        .then(results => {
-            output.totalRows = results[0].num;
-            output.totalPages = Math.ceil(output.totalRows / perPage);
-            if (output.page < 1) output.page = 1;
-            if (output.page > output.totalPages) output.page = output.totalPages;
-            const sql = `SELECT * FROM address_book ORDER BY sid DESC LIMIT ${(output.page - 1) * output.perPage}, ${output.perPage}`;
-            return db.queryAsync(sql);
-        })
-        .then(results => {
-            const fm = 'YYYY-MM-DD';
-            for (let i of results) {
-                i.birthday = moment(i.birthday).format(fm);
-            }
-            output.rows = results;
-            res.json(output);
-        })
-        .catch(ex => {
-        });
+//async 需與 await 共存(非同步)
+router.get('/list/:page?', async (req, res)=>{
+    const output = await getDataByPage(req);
+    res.json(output);
 });
+
+router.get('/:page?', async (req, res)=>{
+    const output = await getDataByPage(req);
+    res.render('addr_book/list', output);
+});
+//============讀入表單: END HERE.
 
 module.exports = router;
